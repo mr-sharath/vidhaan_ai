@@ -1128,32 +1128,16 @@ export default function VidhaanAIWorkspace() {
             </div>
             <button 
               onClick={handleSignOut}
-              className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors cursor-pointer shrink-0 ml-1.5"
+              className="flex items-center gap-1 px-2.5 py-1.5 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-lg transition-colors cursor-pointer shrink-0 ml-1.5 text-xs font-bold font-sans"
               title="Sign Out Session"
             >
-              <LogOut size={14} className="stroke-[2]" />
+              <LogOut size={13} className="stroke-[2.5]" />
+              <span>Sign Out</span>
             </button>
           </div>
         )}
 
-        {/* API Health & Settings controls */}
-        <div className="p-3.5 border-t border-slate-200 bg-slate-50 flex flex-col shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div className={`w-2 h-2 rounded-full ${healthStatus === 'connected' ? 'bg-emerald-500' : 'bg-amber-500'} ${healthStatus === 'checking' && 'animate-pulse'}`} />
-              <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wide font-semibold">
-                {healthStatus === 'connected' ? 'Node Active' : 'Node Disconnected'}
-              </span>
-            </div>
-            <button 
-              onClick={checkBackendHealth} 
-              className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
-              title="Refresh connection health"
-            >
-              <Settings size={12} />
-            </button>
-          </div>
-        </div>
+
       </div>
 
       {/* Mobile Sidebar Backdrop Overlay */}
@@ -1233,10 +1217,11 @@ export default function VidhaanAIWorkspace() {
                 </div>
                 <button 
                   onClick={handleSignOut}
-                  className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors cursor-pointer shrink-0 ml-1.5"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 border border-red-200 hover:border-red-600 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-lg transition-all cursor-pointer shrink-0 ml-1.5 text-xs font-bold font-sans"
                   title="Sign Out Session"
                 >
-                  <LogOut size={14} className="stroke-[2]" />
+                  <LogOut size={13} className="stroke-[2.5]" />
+                  <span>Sign Out</span>
                 </button>
               </div>
             )}
