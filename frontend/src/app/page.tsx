@@ -982,8 +982,10 @@ export default function VidhaanAIWorkspace() {
       {/* ================================================================= */}
       <div
         className={`${
-          sidebarOpen ? 'w-80' : 'w-0'
-        } transition-all duration-300 ease-in-out border-r border-slate-200 bg-[#f8fafc] flex flex-col h-full relative overflow-hidden shrink-0 z-20`}
+          sidebarOpen 
+            ? 'translate-x-0 w-80 shadow-2xl md:shadow-none' 
+            : '-translate-x-full w-80 md:w-0 md:translate-x-0'
+        } md:translate-x-0 fixed md:static inset-y-0 left-0 transition-all duration-300 ease-in-out border-r border-slate-200 bg-[#f8fafc] flex flex-col h-full z-30 md:z-20 overflow-hidden shrink-0`}
       >
         {/* Workspace Brand and Logo */}
         <div className="flex items-center justify-between p-4 border-b border-slate-200 h-16 shrink-0 bg-[#0f2942] text-white">
@@ -1125,6 +1127,14 @@ export default function VidhaanAIWorkspace() {
         </div>
       </div>
 
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-25 md:hidden animate-fade-in"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ================================================================= */}
       {/* 2. CENTRAL WORKSPACE BOARD                                        */}
       {/* ================================================================= */}
@@ -1149,32 +1159,34 @@ export default function VidhaanAIWorkspace() {
 
           {/* Mode Switch & Auth Controls */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 bg-slate-100 border border-slate-200 p-1 rounded-xl">
+            <div className="flex items-center gap-2 sm:gap-3 bg-slate-100 border border-slate-200 p-1 rounded-xl">
               <button
                 onClick={() => {
                   if (!isStreaming) setAugmentedMode(true);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all cursor-pointer ${
                   augmentedMode
                     ? 'bg-[#0f2942] text-white shadow-sm'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <Database size={12} />
-                <span>Augmented RAG</span>
+                <span className="hidden sm:inline">Augmented RAG</span>
+                <span className="inline sm:hidden">RAG</span>
               </button>
               <button
                 onClick={() => {
                   if (!isStreaming) setAugmentedMode(false);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all cursor-pointer ${
                   !augmentedMode
                     ? 'bg-[#0f2942] text-white shadow-sm'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <Cpu size={12} />
-                <span>Direct LLM</span>
+                <span className="hidden sm:inline">Direct LLM</span>
+                <span className="inline sm:hidden">Direct</span>
               </button>
             </div>
 
@@ -1184,7 +1196,7 @@ export default function VidhaanAIWorkspace() {
                 <div className="bg-[#0f2942]/10 text-[#0f2942] p-1.5 rounded-full shrink-0 flex items-center justify-center">
                   <User size={13} className="stroke-[2.5]" />
                 </div>
-                <div className="flex flex-col text-left">
+                <div className="flex flex-col text-left hidden sm:flex">
                   <span className="text-[10px] text-slate-400 font-mono uppercase font-bold tracking-wider leading-none">active session</span>
                   <span className="text-xs font-bold text-[#0f2942] max-w-[140px] truncate font-mono mt-0.5" title={user.email}>
                     {user.email}
@@ -1203,7 +1215,7 @@ export default function VidhaanAIWorkspace() {
         </header>
 
         {/* Primary Research Bubble Log */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-6">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
           {messages.length === 0 ? (
             <div className="max-w-2xl mx-auto text-center py-12 flex flex-col items-center justify-center animate-slide-in">
               <div className="bg-amber-500/10 p-5 rounded-full text-[#f57c00] mb-5">
@@ -1275,7 +1287,7 @@ export default function VidhaanAIWorkspace() {
                   >
                     {/* Message Bubble */}
                     <div
-                      className={`max-w-2xl p-5 rounded-2xl ${
+                      className={`w-full max-w-[92%] sm:max-w-2xl p-4 sm:p-5 rounded-2xl ${
                         isUser
                           ? 'bg-[#eae6d8] text-[#0f2942] rounded-tr-none border border-[#e0daca]'
                           : 'bg-white text-slate-800 rounded-tl-none border border-slate-200 shadow-xs'
@@ -1472,8 +1484,8 @@ export default function VidhaanAIWorkspace() {
         </div>
 
         {/* central workspace footer with global disclaimer */}
-        <div className="border-t border-slate-200 p-6 bg-white shrink-0">
-          <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative flex items-center bg-[#f7f5f0] border border-slate-200 rounded-xl px-4 py-2.5 focus-within:border-[#f57c00] transition-all">
+        <div className="border-t border-slate-200 p-4 sm:p-6 bg-white shrink-0">
+          <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative flex items-center bg-[#f7f5f0] border border-slate-200 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 focus-within:border-[#f57c00] transition-all">
             <textarea
               rows={1}
               value={input}
@@ -1512,8 +1524,19 @@ export default function VidhaanAIWorkspace() {
       {/* ================================================================= */}
       {/* 3. RIGHT DRAWER: STATUTORY CITATION EXPLORER                       */}
       {/* ================================================================= */}
+      {/* Mobile Right Drawer Backdrop Overlay */}
       {sourcesPanelOpen && selectedSource && (
-        <div className="w-96 border-l border-slate-200 bg-white flex flex-col h-full shrink-0 z-20 animate-slide-in">
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-25 md:hidden animate-fade-in"
+          onClick={() => {
+            setSourcesPanelOpen(false);
+            setSelectedSource(null);
+          }}
+        />
+      )}
+
+      {sourcesPanelOpen && selectedSource && (
+        <div className="fixed md:static inset-y-0 right-0 w-full sm:w-96 border-l border-slate-200 bg-white flex flex-col h-full shrink-0 z-30 md:z-20 shadow-2xl md:shadow-none animate-slide-in">
           
           {/* Header explorer tab */}
           <div className="h-16 border-b border-slate-200 px-4 flex items-center justify-between bg-slate-50 shrink-0">
