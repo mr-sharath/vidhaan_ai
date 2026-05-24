@@ -196,6 +196,11 @@ export default function VidhaanAIWorkspace() {
       }
     }
     
+    // Automatically close sidebar on narrow mobile screens initially
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+    
     // Check Backend Connection Health
     checkBackendHealth();
   }, []);
@@ -1107,6 +1112,30 @@ export default function VidhaanAIWorkspace() {
           })}
         </div>
 
+        {/* User Profile & Sign Out stuck at bottom of sidebar on mobile */}
+        {user && (
+          <div className="p-3.5 border-t border-slate-200 bg-white flex items-center justify-between select-none md:hidden shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="bg-[#0f2942]/10 text-[#0f2942] p-1.5 rounded-full shrink-0 flex items-center justify-center">
+                <User size={13} className="stroke-[2.5]" />
+              </div>
+              <div className="flex flex-col text-left min-w-0">
+                <span className="text-[9px] text-slate-400 font-mono uppercase font-bold tracking-wider leading-none">active session</span>
+                <span className="text-xs font-bold text-[#0f2942] truncate font-mono mt-0.5" title={user.email}>
+                  {user.email}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={handleSignOut}
+              className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors cursor-pointer shrink-0 ml-1.5"
+              title="Sign Out Session"
+            >
+              <LogOut size={14} className="stroke-[2]" />
+            </button>
+          </div>
+        )}
+
         {/* API Health & Settings controls */}
         <div className="p-3.5 border-t border-slate-200 bg-slate-50 flex flex-col shrink-0">
           <div className="flex items-center justify-between">
@@ -1192,7 +1221,7 @@ export default function VidhaanAIWorkspace() {
 
             {/* Email & Sign Out fixed at corner of workspace */}
             {user && (
-              <div className="flex items-center gap-2.5 border-l border-slate-200 pl-4 h-9 shrink-0 select-none">
+              <div className="hidden md:flex items-center gap-2.5 border-l border-slate-200 pl-4 h-9 shrink-0 select-none">
                 <div className="bg-[#0f2942]/10 text-[#0f2942] p-1.5 rounded-full shrink-0 flex items-center justify-center">
                   <User size={13} className="stroke-[2.5]" />
                 </div>
@@ -1497,7 +1526,7 @@ export default function VidhaanAIWorkspace() {
                 }
               }}
               placeholder="Ask a legal statutory question (e.g. indemnity section 124, article 14)..."
-              className="flex-1 bg-transparent border-0 outline-none ring-0 placeholder-slate-400 text-sm py-1.5 resize-none overflow-y-auto leading-relaxed max-h-24 font-sans text-slate-800"
+              className="flex-1 bg-transparent border-0 outline-none ring-0 placeholder-slate-400 text-base md:text-sm py-1.5 resize-none overflow-y-auto leading-relaxed max-h-24 font-sans text-slate-800"
             />
             <button
               type="submit"
