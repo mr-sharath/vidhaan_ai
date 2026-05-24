@@ -980,7 +980,7 @@ export default function VidhaanAIWorkspace() {
   const activeChat = threads.find((t) => t.id === activeThreadId);
 
   return (
-    <div className="flex flex-row flex-1 h-screen max-h-screen w-full overflow-hidden select-none bg-[#fdfbf7] text-slate-800 min-h-0">
+    <div className="flex flex-row flex-1 h-full w-full overflow-hidden select-none bg-[#fdfbf7] text-slate-800">
       
       {/* ================================================================= */}
       {/* 1. LEFT SIDEBAR: ACTIVE DATABASE THREADS & AUTH                   */}
@@ -1167,7 +1167,7 @@ export default function VidhaanAIWorkspace() {
       {/* ================================================================= */}
       {/* 2. CENTRAL WORKSPACE BOARD                                        */}
       {/* ================================================================= */}
-      <div className="flex-1 flex flex-col h-full max-h-full min-h-0 relative z-10 overflow-hidden bg-[#fdfbf7]">
+      <div className="flex-1 flex flex-col h-full relative z-10 overflow-hidden bg-[#fdfbf7]">
         
         {/* Navy Blue Controls Ribbon */}
         <header className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white shrink-0">
@@ -1244,7 +1244,7 @@ export default function VidhaanAIWorkspace() {
         </header>
 
         {/* Primary Research Bubble Log */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 scroll-smooth">
           {messages.length === 0 ? (
             <div className="max-w-2xl mx-auto text-center py-12 flex flex-col items-center justify-center animate-slide-in">
               <div className="bg-amber-500/10 p-5 rounded-full text-[#f57c00] mb-5">
