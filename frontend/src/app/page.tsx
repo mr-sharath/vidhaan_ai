@@ -58,6 +58,8 @@ interface UserSession {
   created_at: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function VidhaanAIWorkspace() {
   // --- User Auth & State ---
   const [user, setUser] = useState<UserSession | null>(null);
@@ -228,7 +230,7 @@ export default function VidhaanAIWorkspace() {
   const checkBackendHealth = async () => {
     try {
       setHealthStatus('checking');
-      const res = await fetch('http://localhost:8000/api/health');
+      const res = await fetch(`${API_BASE_URL}/api/health`);
       if (res.ok) {
         setHealthStatus('connected');
       } else {
@@ -241,7 +243,7 @@ export default function VidhaanAIWorkspace() {
 
   const fetchThreads = async (userId: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/threads?user_id=${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/threads?user_id=${userId}`);
       if (res.ok) {
         const data = await res.json();
         setThreads(data);
@@ -259,7 +261,7 @@ export default function VidhaanAIWorkspace() {
 
   const fetchThreadMessages = async (threadId: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/threads/${threadId}/messages`);
+      const res = await fetch(`${API_BASE_URL}/api/threads/${threadId}/messages`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data);
@@ -271,7 +273,7 @@ export default function VidhaanAIWorkspace() {
 
   const createThread = async (userId: string, title: string) => {
     try {
-      const res = await fetch('http://localhost:8000/api/threads', {
+      const res = await fetch(`${API_BASE_URL}/api/threads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, title: title })
@@ -290,7 +292,7 @@ export default function VidhaanAIWorkspace() {
   const deleteThread = async (threadId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://localhost:8000/api/threads/${threadId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/threads/${threadId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -321,8 +323,8 @@ export default function VidhaanAIWorkspace() {
     setAuthLoading(true);
     setAuthError('');
     const endpoint = authMode === 'signup' 
-      ? 'http://localhost:8000/api/auth/signup' 
-      : 'http://localhost:8000/api/auth/signin';
+      ? `${API_BASE_URL}/api/auth/signup` 
+      : `${API_BASE_URL}/api/auth/signin`;
       
     try {
       const res = await fetch(endpoint, {
@@ -346,7 +348,7 @@ export default function VidhaanAIWorkspace() {
         setAuthError(errData.detail || 'Authentication server rejected details. Check credentials.');
       }
     } catch (err) {
-      setAuthError('Cannot reach backend server. Make sure the API is active on port 8000.');
+      setAuthError(`Cannot reach backend server. Make sure the API is active at ${API_BASE_URL}.`);
     } finally {
       setAuthLoading(false);
     }
@@ -365,7 +367,7 @@ export default function VidhaanAIWorkspace() {
   const handleRenameThread = async (threadId: string, newTitle: string) => {
     if (!newTitle.trim()) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/threads/${threadId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/threads/${threadId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTitle.trim() })
@@ -466,7 +468,7 @@ export default function VidhaanAIWorkspace() {
     let streamedContent = '';
 
     try {
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -546,7 +548,7 @@ export default function VidhaanAIWorkspace() {
 
       // Final synchronization reload of thread entries to show updated titles if any
       if (user) {
-        const threadListRes = await fetch(`http://localhost:8000/api/threads?user_id=${user.id}`);
+        const threadListRes = await fetch(`${API_BASE_URL}/api/threads?user_id=${user.id}`);
         if (threadListRes.ok) {
           const updatedThreads = await threadListRes.json();
           setThreads(updatedThreads);
