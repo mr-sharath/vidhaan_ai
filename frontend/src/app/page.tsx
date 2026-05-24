@@ -612,7 +612,7 @@ export default function VidhaanAIWorkspace() {
   // --- RENDER LANDING PAGE ---
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#fdfbf7] flex flex-col text-slate-800 animate-slide-in">
+      <div className="min-h-screen bg-[#fdfbf7] flex flex-col text-slate-800">
         {/* Premium Tricolor Navy Header */}
         <header className="bg-[#0f2942] text-white py-4 px-6 border-b-4 border-[#f57c00] shadow-md sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -640,7 +640,7 @@ export default function VidhaanAIWorkspace() {
         </header>
 
         {/* Hero Section */}
-        <main className="flex-1">
+        <main className="flex-1 animate-slide-in">
           <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-[#f57c00]/30 rounded-full text-xs font-semibold text-[#f57c00]">
