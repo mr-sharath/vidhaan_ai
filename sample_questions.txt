@@ -1,0 +1,54 @@
+Here is a structured, comprehensive questionnaire designed specifically to test the **Retrieval-Augmented Generation (RAG)** capabilities of Vidhaan AI. 
+
+These questions are tailored to target the specific statutory acts in your local database (such as the *Constitution of India*, *Indian Contract Act*, *Arbitration and Conciliation Act*, etc.) to help you verify dense vector retrieval, sparse keyword search, and parametric fallback systems.
+
+---
+
+### Category A: Direct Statutory Matches (Testing Exact Section/Article Retrieval)
+*These test the hybrid search's ability to locate exact sections when specific names or numbers are provided.*
+
+1.  **Question**: *What are the grounds for challenging the appointment of an arbitrator under Section 12 of the Arbitration and Conciliation Act, 1996?*
+    *   **RAG Expectation**: The "Thinking" panel should open, show RAG status, retrieve chunks from `Arbitration_and_Conciliation_Act_1996.pdf` containing Section 12, and display the PDF name.
+2.  **Question**: *Explain the definition of a contract of indemnity under Section 124 of the Indian Contract Act, 1872.*
+    *   **RAG Expectation**: The system should retrieve the exact text of Section 124 of the Contract Act and explain the relationship between the indemnifier and the indemnity holder.
+3.  **Question**: *How is Equality before Law defined under Article 14 of the Constitution of India?*
+    *   **RAG Expectation**: The system should fetch constitutional vector chunks, highlight Article 14, and explain standard legal interpretations of "Equality before Law" and "Equal Protection of the Laws."
+
+---
+
+### Category B: Semantic Concept Queries (Testing Dense Embedding Match *Without* Citations)
+*These test if the RAG vector engine can find the correct legal section based on legal concepts, even when you do not mention any section or article numbers.*
+
+4.  **Question**: *What is the legal recourse if a party promises to save another party from loss caused by the conduct of the promisor?*
+    *   **RAG Expectation**: Even without mentioning "Section 124" or "Indemnity", the dense vector search should semantically match this to **Section 124 of the Indian Contract Act, 1872** (Contract of Indemnity) and display the relevant Contract Act PDF in the sources drawer.
+5.  **Question**: *Under what circumstances can a court appoint an arbitrator if the parties fail to agree on a procedure?*
+    *   **RAG Expectation**: The dense vector search should locate **Section 11** of the Arbitration and Conciliation Act (Appointment of Arbitrators) and list the Arbitration Act PDF.
+6.  **Question**: *Can the State make special provisions for women and children, or does that violate the right to non-discrimination?*
+    *   **RAG Expectation**: The engine should semantically map this to **Article 15(3)** of the Constitution of India (Special provisions for women and children) and show that it is an exception to the general rule of non-discrimination.
+
+---
+
+### Category C: Complex Statutory Interpretation (Testing Synthesizing and Reasoning)
+*These test how the LLM synthesizes a structured, disclaimer-free answer when multiple overlapping chunks are retrieved.*
+
+7.  **Question**: *Compare the difference between a Contract of Indemnity and a Contract of Guarantee under the Indian Contract Act.*
+    *   **RAG Expectation**: The system should retrieve chunks for Section 124 (Indemnity) and Section 126 (Guarantee), and synthesize a clean comparative structure or table outlining the number of parties, nature of liability, and primary objectives.
+8.  **Question**: *Under what grounds can an arbitral award be set aside by a court under the Arbitration Act?*
+    *   **RAG Expectation**: The hybrid search should fetch chunks related to **Section 34** of the Arbitration Act, presenting a highly structured list of grounds (e.g., incapacity of parties, invalid arbitration agreement, public policy violation).
+
+---
+
+### Category D: Parametric Fallback (Testing Out-of-Scope RAG Resilience)
+*These test how the system behaves when the query is legal but falls outside the specific ingested statutory database chunks, ensuring it falls back gracefully to LLM knowledge without crashing.*
+
+9.  **Question**: *What is the difference between a Cognizable and Non-Cognizable offense under Indian criminal law?*
+    *   **RAG Expectation**: If the criminal acts are not fully indexed, the "Thinking" logs should indicate that no high-confidence database records matched, fall back to standard parametric memory, and synthesize a structured, dispassionate legal explanation of the differences under the CrPC/BNSS.
+10. **Question**: *What are the tax slabs under the Indian Income Tax Act for the assessment year 2026?*
+    *   **RAG Expectation**: Acknowledges that the specific current Finance Act/Tax slabs are not in the local database chunks, and utilizes clean parametric memory fallback to present the latest known legal frameworks.
+
+---
+
+### 💡 Testing Workflow Tip:
+While executing these queries in your workspace:
+1.  **Watch the "Thinking & RAG Retrieval Context" dropdown** above the response bubble—it will automatically expand to show you the search statuses and retrieved PDF filenames (e.g. `Arbitration_and_Conciliation_Act_1996.pdf`) as the answer streams in.
+2.  **Try using the "Direct LLM" mode toggle** in the header to run the exact same query without RAG context. This allows you to immediately compare how much more grounded, precise, and verified the "Augmented RAG" response is compared to direct model inference!

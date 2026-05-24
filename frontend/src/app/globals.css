@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-saffron-50: #fffaf0;
+  --color-saffron-100: #feebc8;
+  --color-saffron-500: #dd6b20;
+  --color-saffron-600: #c05621;
+  --color-navy-800: #1a365d;
+  --color-navy-950: #0f172a;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Playfair Display', serif;
+}
+
+:root {
+  --background: #fdfbf7; /* Premium Cream Canvas representing legal parchment */
+  --foreground: #1e293b; /* Deep slate for rich readability */
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --sidebar: #f8fafc;
+  --primary: #0f2942; /* Ashoka Navy Blue */
+  --accent: #f57c00; /* National Saffron Accent */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom premium scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 41, 66, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 124, 0, 0.4);
+}
+
+/* Micro-animations */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(245, 124, 0, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(245, 124, 0, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(245, 124, 0, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

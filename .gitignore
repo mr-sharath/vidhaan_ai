@@ -1,0 +1,23 @@
+# Virtual environments and dependencies
+backend/venv/
+backend/.env
+frontend/node_modules/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+node_modules/
+.next/
+
+# Caches and builds
+__pycache__/
+*.pyc
+.DS_Store
+.env
+build/
+dist/
+out/
+.vercel
+
+# PDF and Database files (exclude large static binary files)
+data/
+*.pdf
+*.db
