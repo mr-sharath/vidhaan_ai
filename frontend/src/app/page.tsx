@@ -211,11 +211,19 @@ export default function VidhaanAIWorkspace() {
       if (res.ok) {
         const data = await res.json();
         setThreads(data);
-        if (data.length > 0) {
-          setActiveThreadId(data[0].id);
+        const isFreshLogin = sessionStorage.getItem('vidhaan_fresh_login') === 'true';
+        if (isFreshLogin) {
+          sessionStorage.removeItem('vidhaan_fresh_login');
+          // Start a fresh empty chat when user logs in freshly
+          createThread(userId, "New Legal Analysis");
+          // Automatically open the left-hand history panel
+          setSidebarOpen(true);
         } else {
-          // Auto create a thread if user has none
-          createThread(userId, "Statutory Investigation");
+          if (data.length > 0) {
+            setActiveThreadId(data[0].id);
+          } else {
+            createThread(userId, "Statutory Investigation");
+          }
         }
       }
     } catch (err) {
@@ -431,6 +439,7 @@ export default function VidhaanAIWorkspace() {
         const data = await res.json();
         setUser(data);
         localStorage.setItem('vidhaan_user', JSON.stringify(data));
+        sessionStorage.setItem('vidhaan_fresh_login', 'true');
         setShowAuthModal(false);
         setAuthPassword('');
         setAuthError('');

@@ -88,12 +88,8 @@ export default function PWAInstallBanner() {
       <div className="flex items-center gap-2 pr-4 min-w-0 flex-wrap">
         <Smartphone size={16} className="shrink-0 text-white/90" />
         {isIOSDevice ? (
-          <span className="flex items-center gap-1 text-[11px] sm:text-xs">
-            Tap
-            <svg className="w-3.5 h-3.5 inline mx-0.5 text-white stroke-[2.5] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h10a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3-3m0 0 3 3m-3-3v12" />
-            </svg>
-            then &ldquo;Add to Home Screen&rdquo; for best experience
+          <span className="text-[11px] sm:text-xs">
+            Add to Home Screen: Tap Share and then Add to Home Screen for best experience
           </span>
         ) : (
           <span className="text-[11px] sm:text-xs">

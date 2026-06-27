@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import PWAInstallBanner from '../components/PWAInstallBanner';
 import {
-  Scale,
   ArrowLeft,
   Trash2,
   BookOpen,
@@ -12,7 +11,6 @@ import {
   Printer,
   Copy,
   Check,
-  FileText,
   Plus
 } from 'lucide-react';
 
@@ -350,29 +348,21 @@ export default function WorkspaceNotebook() {
           <Link
             href="/"
             className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] text-slate-600 dark:text-slate-300 hover:text-[#f57c00] rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
+            title="Return to Chat Workspace"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={16} />
             <span className="hidden sm:inline">Return to Chat</span>
             <span className="inline sm:hidden">Chat</span>
           </Link>
           <span className="text-slate-300 dark:text-[#243242]">|</span>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] rounded-lg text-slate-600 dark:text-slate-400 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
-            title={sidebarOpen ? "Collapse Citations" : "Expand Citations"}
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] rounded-lg text-slate-600 dark:text-slate-400 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+            title={sidebarOpen ? "Collapse Pinned Citations Panel" : "Expand Pinned Citations Panel"}
           >
             <BookOpen size={16} className="text-[#f57c00]" />
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">Citations</span>
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">Pinned Citations</span>
           </button>
-          <span className="text-slate-300 dark:text-[#243242]">|</span>
-          <div className="flex items-center gap-2 text-[#0f2942] dark:text-amber-500">
-            <Scale size={18} className="stroke-[1.5]" />
-            <h1 className="text-sm font-bold tracking-tight">My Notebook</h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 font-mono">
-          <span>USER: {user?.email}</span>
         </div>
       </header>
 
@@ -400,40 +390,36 @@ export default function WorkspaceNotebook() {
 
         {/* COLUMN B: Rich Text Editor Area (Width: 2/3) */}
         <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#0d131a] relative">
-          <div className="p-4 border-b border-slate-200 dark:border-[#243242] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-[#151e29]">
-            <div className="flex items-center gap-2">
-              <FileText size={15} className="text-[#0f2942] dark:text-amber-500" />
-              <span className="text-xs font-bold text-[#0f2942] dark:text-slate-200">Notebook Editor</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCopyDraft}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-slate-300 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
-              >
-                {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
-                <span>{copySuccess ? 'Copied!' : 'Copy to Clipboard'}</span>
-              </button>
+          <div className="p-4 border-b border-slate-200 dark:border-[#243242] flex items-center justify-start gap-2.5 shrink-0 bg-slate-50 dark:bg-[#151e29]">
+            <button
+              onClick={handleCopyDraft}
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-slate-300 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
+            >
+              {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+              <span>{copySuccess ? 'Copied!' : 'Copy to Clipboard'}</span>
+            </button>
 
-              <button
-                onClick={handleDownload}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-[#f57c00] rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-[#f57c00] bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
-              >
-                <Download size={11} />
-                <span>Export Brief</span>
-              </button>
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-[#f57c00] rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-[#f57c00] bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
+            >
+              <Download size={11} />
+              <span>Export Brief</span>
+            </button>
 
-              <button
-                onClick={handlePrint}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0f2942] dark:bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-600 rounded-lg text-[11px] font-bold text-white dark:text-[#0a0e14] cursor-pointer shadow-xs transition-all"
-              >
-                <Printer size={11} />
-                <span>Print brief</span>
-              </button>
-            </div>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0f2942] dark:bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-600 rounded-lg text-[11px] font-bold text-white dark:text-[#0a0e14] cursor-pointer shadow-xs transition-all"
+            >
+              <Printer size={11} />
+              <span>Print Brief</span>
+            </button>
           </div>
 
           <div className="flex-1 p-6 overflow-hidden flex flex-col">
+            <span className="text-[10px] font-bold font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-2">
+              Notebook Editor Whiteboard
+            </span>
             <textarea
               ref={textareaRef}
               value={draftContent}
