@@ -15,9 +15,9 @@ def dense_search(db: Session, query_text: str, limit: int = 30) -> List[Dict[str
         return []
 
     sql = text("""
-        SELECT id, parent_id, content, (1 - (embedding <=> CAST(:query_embedding AS vector))) AS score
+        SELECT id, parent_id, content, (- (embedding <#> CAST(:query_embedding AS vector))) AS score
         FROM child_documents
-        ORDER BY embedding <=> CAST(:query_embedding AS vector)
+        ORDER BY embedding <#> CAST(:query_embedding AS vector)
         LIMIT :limit;
     """)
     
@@ -40,26 +40,21 @@ def dense_search(db: Session, query_text: str, limit: int = 30) -> List[Dict[str
 def sparse_search(db: Session, query_text: str, limit: int = 30) -> List[Dict[str, Any]]:
     """
     Retrieves child chunks using PostgreSQL full-text search (FTS) with ts_rank.
-    Cleans conversational stop words and runs highly resilient OR matches.
+    Utilizes PostgreSQL's native websearch_to_tsquery for syntax resilience.
     """
     if not query_text.strip():
         return []
 
-    # Filter stop words and format as OR keywords
-    clean_query = re_clean_query(query_text)
-    if not clean_query:
-        return []
-
     sql = text("""
-        SELECT id, parent_id, content, ts_rank(fts_tokens, to_tsquery('english', :query_text)) AS score
+        SELECT id, parent_id, content, ts_rank(fts_tokens, websearch_to_tsquery('english', :query_text)) AS score
         FROM child_documents
-        WHERE fts_tokens @@ to_tsquery('english', :query_text)
+        WHERE fts_tokens @@ websearch_to_tsquery('english', :query_text)
         ORDER BY score DESC
         LIMIT :limit;
     """)
     
     try:
-        result = db.execute(sql, {"query_text": clean_query, "limit": limit})
+        result = db.execute(sql, {"query_text": query_text, "limit": limit})
         hits = []
         for row in result:
             hits.append({

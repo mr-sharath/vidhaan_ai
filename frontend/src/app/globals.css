@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-saffron-50: #fffaf0;
   --color-saffron-100: #feebc8;
@@ -20,6 +22,16 @@
   --sidebar: #f8fafc;
   --primary: #0f2942; /* Ashoka Navy Blue */
   --accent: #f57c00; /* National Saffron Accent */
+}
+
+.dark {
+  --background: #0d131a; /* Rich dark slate */
+  --foreground: #f1f5f9; /* Off-white for readability */
+  --card: #151e29;      /* Dark card canvas */
+  --border: #243242;    /* Dark border slate */
+  --sidebar: #0a0e14;   /* Very dark sidebar background */
+  --primary: #f57c00;   /* Saffron primary in dark mode for contrast */
+  --accent: #38bdf8;    /* Sky blue accent */
 }
 
 body {

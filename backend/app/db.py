@@ -41,6 +41,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     threads = relationship("ChatThread", back_populates="user", cascade="all, delete-orphan")
+    citations = relationship("NotebookCitation", back_populates="user", cascade="all, delete-orphan")
 
 class ChatThread(Base):
     __tablename__ = 'chat_threads'
@@ -49,6 +50,7 @@ class ChatThread(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     title = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    is_pinned = Column(Boolean, default=False, nullable=False)
     
     user = relationship("User", back_populates="threads")
     messages = relationship("ChatMessage", back_populates="thread", cascade="all, delete-orphan")
@@ -61,9 +63,25 @@ class ChatMessage(Base):
     role = Column(String, nullable=False)  # 'user' or 'assistant'
     content = Column(Text, nullable=False)
     sources = Column(JSONB, default=list, nullable=True)
+    model = Column(String, nullable=True)
+    search_meta = Column(JSONB, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     thread = relationship("ChatThread", back_populates="messages")
+
+class NotebookCitation(Base):
+    __tablename__ = 'notebook_citations'
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    act_title = Column(String, nullable=False)
+    section_title = Column(String, nullable=True)
+    pdf_name = Column(String, nullable=True)
+    snippet = Column(Text, nullable=False)
+    custom_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    user = relationship("User", back_populates="citations")
 
 # Create Database Engine
 engine = create_engine(settings.DATABASE_URL)
