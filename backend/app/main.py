@@ -27,7 +27,7 @@ app = FastAPI(
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "https://vidhaan.vercel.app"],
+    allow_origins=[FRONTEND_URL, "https://vidhaan.vercel.app", "https://vidhaanai.online", "https://www.vidhaanai.online"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
