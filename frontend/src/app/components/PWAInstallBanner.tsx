@@ -29,13 +29,7 @@ export default function PWAInstallBanner() {
       return;
     }
 
-    // 2. Check if banner was dismissed in this session
-    const isDismissed = sessionStorage.getItem('vidhaan_pwa_dismissed') === 'true';
-    if (isDismissed) {
-      return;
-    }
-
-    // 3. iOS detection
+    // 2. iOS detection
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window);
     if (isIOS) {
       setTimeout(() => {
@@ -45,7 +39,7 @@ export default function PWAInstallBanner() {
       return;
     }
 
-    // 4. Android/Chrome prompt listener
+    // 3. Android/Chrome prompt listener
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setTimeout(() => {
@@ -78,43 +72,51 @@ export default function PWAInstallBanner() {
 
   const handleDismiss = () => {
     setIsVisible(false);
-    sessionStorage.setItem('vidhaan_pwa_dismissed', 'true');
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="bg-[#090d12] border-b border-[#f57c00]/30 text-[#fdfbf7] py-2.5 px-4 sm:px-6 text-[11px] sm:text-xs font-semibold flex items-center justify-between shadow-sm relative z-50 animate-fade-in select-none">
-      <div className="flex items-center min-w-0 pr-4">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-sm bg-slate-900/95 dark:bg-slate-950/95 border-2 border-[#f57c00] text-[#fdfbf7] p-5 rounded-2xl shadow-2xl z-50 select-none animate-slide-in flex flex-col gap-3">
+      {/* Close button */}
+      <button
+        onClick={handleDismiss}
+        className="absolute top-2.5 right-2.5 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+        title="Dismiss popup"
+      >
+        <X size={15} className="stroke-[2.5]" />
+      </button>
+
+      {/* Title */}
+      <div className="flex items-center gap-2">
+        <span className="text-[13px] font-bold text-amber-500 font-display tracking-wider uppercase">
+          Install Vidhaan AI
+        </span>
+      </div>
+
+      {/* Description */}
+      <div className="text-xs font-semibold leading-relaxed text-slate-200 font-sans pr-4">
         {isIOSDevice ? (
           <span>
-            Tap Share and select &ldquo;Add to Home Screen&rdquo; for the best experience.
+            Tap the browser Share button and select &ldquo;Add to Home Screen&rdquo; for the best experience.
           </span>
         ) : (
           <span>
-            Install Vidhaan AI on your device for a full-screen experience.
+            Add this application to your device to enable a full-screen, institutional-grade legal workbench experience.
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        {!isIOSDevice && deferredPrompt && (
-          <button
-            onClick={handleInstallClick}
-            className="flex items-center gap-1 bg-[#f57c00] hover:bg-[#dd6b20] text-white px-3 py-1 rounded-lg text-[10px] font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
-          >
-            <Download size={11} className="stroke-[2.5]" />
-            <span>Install</span>
-          </button>
-        )}
+      {/* Install Action Button (For Android/Chrome only) */}
+      {!isIOSDevice && deferredPrompt && (
         <button
-          onClick={handleDismiss}
-          className="text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-md transition-colors cursor-pointer"
-          title="Dismiss banner"
+          onClick={handleInstallClick}
+          className="w-full py-2 bg-[#f57c00] hover:bg-[#dd6b20] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5"
         >
-          <X size={13} className="stroke-[2.5]" />
+          <Download size={13} className="stroke-[2.5]" />
+          <span>Add to Home Screen</span>
         </button>
-      </div>
+      )}
     </div>
   );
 }
