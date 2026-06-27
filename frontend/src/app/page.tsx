@@ -88,6 +88,7 @@ export default function VidhaanAIWorkspace() {
   const [input, setInput] = useState<string>('');
   const [augmentedMode, setAugmentedMode] = useState<boolean>(true);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [showModeDropdown, setShowModeDropdown] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   
@@ -216,8 +217,8 @@ export default function VidhaanAIWorkspace() {
           sessionStorage.removeItem('vidhaan_fresh_login');
           // Start a fresh empty chat when user logs in freshly
           createThread(userId, "New Legal Analysis");
-          // Automatically open the left-hand history panel
-          setSidebarOpen(true);
+          // Keep sidebar closed on login to lead user directly to chat page
+          setSidebarOpen(false);
         } else {
           if (data.length > 0) {
             setActiveThreadId(data[0].id);
@@ -2010,12 +2011,13 @@ export default function VidhaanAIWorkspace() {
                                   </button>
                                   <button
                                     onClick={() => handlePinCitation(src)}
-                                    className={`px-2.5 py-1.5 hover:bg-slate-50 dark:hover:bg-[#151e29] cursor-pointer transition-all ${
-                                      isPinned ? 'text-amber-500 hover:text-amber-600' : 'text-slate-400 hover:text-slate-600'
+                                    className={`px-2.5 py-1.5 hover:bg-slate-50 dark:hover:bg-[#151e29] cursor-pointer transition-all flex items-center gap-1 text-[10px] font-bold ${
+                                      isPinned ? 'text-amber-500 hover:text-amber-600' : 'text-slate-400 hover:text-slate-650'
                                     }`}
-                                    title={isPinned ? "Unpin citation from Research Notebook" : "Pin citation to Research Notebook"}
+                                    title={isPinned ? "Unpin citation from My Notebook" : "Pin citation to My Notebook"}
                                   >
                                     <Pin size={10} className={isPinned ? 'fill-amber-500 stroke-[2]' : 'stroke-[2]'} />
+                                    <span>{isPinned ? 'Pinned' : 'Pin'}</span>
                                   </button>
                                 </div>
                               );
@@ -2076,8 +2078,9 @@ export default function VidhaanAIWorkspace() {
             <div className="relative shrink-0 mr-2 border-r border-slate-200 dark:border-[#243242] pr-2">
               <button
                 type="button"
-                onClick={() => {
-                  if (!isStreaming) setAugmentedMode(!augmentedMode);
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Prevents focus theft, keeping mobile keyboard open!
+                  if (!isStreaming) setShowModeDropdown(!showModeDropdown);
                 }}
                 className="flex items-center gap-1.5 px-2 py-1 bg-white hover:bg-slate-100 dark:bg-[#0d131a] dark:hover:bg-[#202933] border border-slate-200 dark:border-[#243242] rounded-lg text-slate-700 dark:text-slate-300 cursor-pointer transition-all shadow-3xs text-[10px] font-bold"
                 title={augmentedMode ? "Statutory Search active (Augmented RAG)" : "Direct LLM active (No statutory context)"}
@@ -2093,7 +2096,55 @@ export default function VidhaanAIWorkspace() {
                     <span>Direct</span>
                   </>
                 )}
+                <span className="text-[7px] text-slate-400">▼</span>
               </button>
+
+              {/* Custom mode dropdown to prevent keypad collapse */}
+              {showModeDropdown && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-10" 
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setShowModeDropdown(false);
+                    }}
+                  />
+                  <div className="absolute bottom-full left-0 mb-1 w-28 bg-white dark:bg-[#151e29] border border-slate-200 dark:border-[#243242] rounded-lg shadow-lg z-20 py-1 overflow-hidden">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setAugmentedMode(true);
+                        setShowModeDropdown(false);
+                      }}
+                      className={`flex items-center gap-1.5 w-full px-2.5 py-1.5 text-left text-[10px] font-bold transition-colors cursor-pointer ${
+                        augmentedMode 
+                          ? 'bg-amber-500/10 text-[#f57c00]' 
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      <Database size={11} className="text-[#f57c00]" />
+                      <span>RAG Mode</span>
+                    </button>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setAugmentedMode(false);
+                        setShowModeDropdown(false);
+                      }}
+                      className={`flex items-center gap-1.5 w-full px-2.5 py-1.5 text-left text-[10px] font-bold transition-colors cursor-pointer ${
+                        !augmentedMode 
+                          ? 'bg-slate-100 dark:bg-[#151e29] text-[#0f2942] dark:text-amber-500' 
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      <Cpu size={11} className="text-[#0f2942] dark:text-slate-400" />
+                      <span>Direct LLM</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
             <textarea
               rows={1}

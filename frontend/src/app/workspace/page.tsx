@@ -11,7 +11,8 @@ import {
   Printer,
   Copy,
   Check,
-  Plus
+  Plus,
+  LogOut
 } from 'lucide-react';
 
 interface NotebookCitation {
@@ -205,6 +206,12 @@ export default function WorkspaceNotebook() {
     window.print();
   };
 
+  // Sign Out Handler
+  const handleSignOut = () => {
+    localStorage.removeItem('vidhaan_user');
+    window.location.href = '/';
+  };
+
   const renderCitationsList = () => (
     <>
       <div className="p-4 border-b border-slate-200 dark:border-[#243242] bg-white dark:bg-[#0d131a] shrink-0">
@@ -364,6 +371,15 @@ export default function WorkspaceNotebook() {
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">Pinned Citations</span>
           </button>
         </div>
+
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-500 hover:text-red-650 dark:text-slate-400 dark:hover:text-red-400 rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
+          title="Sign out of Vidhaan AI"
+        >
+          <LogOut size={15} />
+          <span>Logout</span>
+        </button>
       </header>
 
       {/* 2. Three Column Layout */}
