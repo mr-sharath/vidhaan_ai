@@ -937,6 +937,7 @@ export default function VidhaanAIWorkspace() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#fdfbf7] flex flex-col text-slate-800">
+        <PWAInstallBanner />
         {/* Premium Tricolor Navy Header */}
         <header className="bg-[#0f2942] text-white py-4 px-4 sm:px-6 border-b-4 border-[#f57c00] shadow-md sticky top-0 z-50">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -949,7 +950,8 @@ export default function VidhaanAIWorkspace() {
                   VIDHAAN AI
                 </h1>
                 <p className="text-[8px] sm:text-[10px] text-slate-300 font-mono tracking-widest -mt-0.5 uppercase truncate">
-                  Sovereign Legal Intelligence Platform of India
+                  <span className="hidden sm:inline">Sovereign Legal Intelligence Platform of India</span>
+                  <span className="inline sm:hidden">Legal AI Platform</span>
                 </p>
               </div>
             </div>

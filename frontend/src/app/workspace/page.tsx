@@ -40,6 +40,7 @@ export default function WorkspaceNotebook() {
   const [editingNotesText, setEditingNotesText] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -88,6 +89,14 @@ export default function WorkspaceNotebook() {
     } else {
       // Redirect to home if not signed in
       window.location.href = '/';
+    }
+
+    // 4. Default sidebar state on large screens
+    if (typeof window !== 'undefined') {
+      const isLarge = window.matchMedia('(min-width: 768px)').matches;
+      setTimeout(() => {
+        setSidebarOpen(isLarge);
+      }, 0);
     }
 
     // 3. Draft Restore
@@ -198,6 +207,139 @@ export default function WorkspaceNotebook() {
     window.print();
   };
 
+  const renderCitationsList = () => (
+    <>
+      <div className="p-4 border-b border-slate-200 dark:border-[#243242] bg-white dark:bg-[#0d131a] shrink-0">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#0f2942] dark:text-amber-500 flex items-center gap-1.5">
+            <BookOpen size={13} className="text-[#f57c00]" />
+            <span>Pinned Citations ({citations.length})</span>
+          </h2>
+          <button 
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer text-xs font-bold p-1"
+            title="Close panel"
+          >
+            ✕
+          </button>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1">
+          Select or copy statutory segments to draft legal briefings.
+        </p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 font-sans">
+        {citations.length === 0 ? (
+          <div className="text-center py-12 text-slate-400 font-mono text-xs">
+            No citations pinned yet.
+            <br />
+            <span className="text-[10px] block mt-1.5">
+              Run statutory queries in the chat and bookmark primary sources.
+            </span>
+          </div>
+        ) : (
+          citations.map((c) => {
+            const isEditing = editingNotesId === c.id;
+            return (
+              <div
+                key={c.id}
+                className="p-3.5 rounded-xl border border-slate-200 dark:border-[#243242] bg-white dark:bg-[#151e29] hover:shadow-2xs transition-shadow text-left space-y-2.5 relative group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#0f2942] dark:text-amber-500 font-mono text-[11px] uppercase tracking-wide truncate max-w-[70%]">
+                    {c.section_title || 'Statute Section'}
+                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {c.pdf_name && (
+                      <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded font-mono font-bold truncate max-w-[80px]">
+                        {c.pdf_name}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleUnpin(c.id)}
+                      className="text-slate-400 hover:text-red-500 cursor-pointer p-0.5"
+                      title="Remove citation"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
+                </div>
+
+                <p className="text-slate-600 dark:text-slate-300 italic text-[11.5px] leading-relaxed pl-2 border-l-2 border-[#f57c00]/60 font-serif">
+                  &quot;{c.snippet}&quot;
+                </p>
+
+                {/* Annotations / Notes */}
+                <div className="bg-[#fdfbf7] dark:bg-[#0d131a] rounded-lg p-2 border border-slate-100 dark:border-[#243242] text-[11px]">
+                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
+                    My Research Notes:
+                  </div>
+                  {isEditing ? (
+                    <div className="space-y-1.5">
+                      <textarea
+                        value={editingNotesText}
+                        onChange={(e) => setEditingNotesText(e.target.value)}
+                        className="w-full bg-white dark:bg-[#151e29] border border-slate-300 dark:border-[#243242] rounded-md p-1.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none font-sans"
+                        rows={3}
+                        placeholder="Add brief details, court arguments, or notes..."
+                      />
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          onClick={() => setEditingNotesId(null)}
+                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded text-[10px] cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSaveNotes(c.id)}
+                          className="px-2 py-1 bg-[#f57c00] hover:bg-[#dd6b20] text-white rounded text-[10px] cursor-pointer font-bold"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-2 text-slate-600 dark:text-slate-300">
+                      <span className="whitespace-pre-wrap leading-relaxed font-sans italic">
+                        {c.custom_notes || 'No annotations added. Click edit to add notes.'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setEditingNotesId(c.id);
+                          setEditingNotesText(c.custom_notes || '');
+                        }}
+                        className="text-[#f57c00] hover:underline cursor-pointer font-bold shrink-0"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 mt-1">
+                  <button
+                    onClick={() => handleInsertReference(c)}
+                    className="flex-1 py-1.5 border border-dashed border-[#f57c00]/40 hover:border-[#f57c00] rounded-lg text-[10.5px] font-bold text-[#f57c00] bg-amber-500/5 hover:bg-amber-500/10 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Plus size={11} />
+                    <span>Insert Reference</span>
+                  </button>
+                  <button
+                    onClick={() => handleUnpin(c.id)}
+                    className="px-2.5 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-red-500 dark:hover:border-red-500/30 rounded-lg text-[10.5px] font-bold text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 bg-white dark:bg-[#151e29] cursor-pointer transition-all"
+                    title="Unpin citation"
+                  >
+                    <Trash2 size={11} />
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div className={`min-h-screen flex flex-col font-sans select-none bg-[#fdfbf7] dark:bg-[#0d131a] text-slate-800 dark:text-slate-100 ${darkMode ? 'dark' : ''}`}>
       <PWAInstallBanner />
@@ -207,11 +349,21 @@ export default function WorkspaceNotebook() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] text-slate-600 dark:text-slate-300 hover:text-[#f57c00] rounded-lg transition-colors cursor-pointer text-xs font-bold"
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] text-slate-600 dark:text-slate-300 hover:text-[#f57c00] rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
           >
             <ArrowLeft size={14} />
-            <span>Return to Chat</span>
+            <span className="hidden sm:inline">Return to Chat</span>
+            <span className="inline sm:hidden">Chat</span>
           </Link>
+          <span className="text-slate-300 dark:text-[#243242]">|</span>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] rounded-lg text-slate-600 dark:text-slate-400 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+            title={sidebarOpen ? "Collapse Citations" : "Expand Citations"}
+          >
+            <BookOpen size={16} className="text-[#f57c00]" />
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">Citations</span>
+          </button>
           <span className="text-slate-300 dark:text-[#243242]">|</span>
           <div className="flex items-center gap-2 text-[#0f2942] dark:text-amber-500">
             <Scale size={18} className="stroke-[1.5]" />
@@ -226,128 +378,24 @@ export default function WorkspaceNotebook() {
 
       {/* 2. Three Column Layout */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden h-[calc(100vh-64px)]">
-        
-        {/* COLUMN A: Notebook Pinned Citations (Width: 1/3) */}
-        <div className="w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-[#243242] bg-[#fcfaf5] dark:bg-[#0a0e14] flex flex-col overflow-hidden shrink-0">
-          <div className="p-4 border-b border-slate-200 dark:border-[#243242] bg-white dark:bg-[#0d131a] shrink-0">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#0f2942] dark:text-amber-500 flex items-center gap-1.5">
-              <BookOpen size={13} className="text-[#f57c00]" />
-              <span>Pinned Citations ({citations.length})</span>
-            </h2>
-            <p className="text-[10px] text-slate-400 mt-1">
-              Select or copy statutory segments to draft legal briefings.
-            </p>
-          </div>
+               {/* COLUMN A: Notebook Pinned Citations (Desktop sidebar panel) */}
+        <div className={`hidden md:flex flex-col bg-[#fcfaf5] dark:bg-[#0a0e14] border-r border-slate-200 dark:border-[#243242] overflow-hidden transition-all duration-300 shrink-0 ${
+          sidebarOpen ? 'w-80 lg:w-96' : 'w-0 border-r-0'
+        }`}>
+          {renderCitationsList()}
+        </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {citations.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 font-mono text-xs">
-                No citations pinned yet.
-                <br />
-                <span className="text-[10px] block mt-1.5">
-                  Run statutory queries in the chat and bookmark primary sources.
-                </span>
-              </div>
-            ) : (
-              citations.map((c) => {
-                const isEditing = editingNotesId === c.id;
-                return (
-                  <div
-                    key={c.id}
-                    className="p-3.5 rounded-xl border border-slate-200 dark:border-[#243242] bg-white dark:bg-[#151e29] hover:shadow-2xs transition-shadow text-left space-y-2.5 relative group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#0f2942] dark:text-amber-500 font-mono text-[11px] uppercase tracking-wide truncate max-w-[70%]">
-                        {c.section_title || 'Statute Section'}
-                      </span>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {c.pdf_name && (
-                          <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded font-mono font-bold truncate max-w-[80px]">
-                            {c.pdf_name}
-                          </span>
-                        )}
-                        <button
-                          onClick={() => handleUnpin(c.id)}
-                          className="text-slate-400 hover:text-red-500 cursor-pointer p-0.5"
-                          title="Remove citation"
-                        >
-                          <Trash2 size={11} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <p className="text-slate-600 dark:text-slate-300 italic text-[11.5px] leading-relaxed pl-2 border-l-2 border-[#f57c00]/60 font-serif">
-                      &quot;{c.snippet}&quot;
-                    </p>
-
-                    {/* Annotations / Notes */}
-                    <div className="bg-[#fdfbf7] dark:bg-[#0d131a] rounded-lg p-2 border border-slate-100 dark:border-[#243242] text-[11px]">
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
-                        My Research Notes:
-                      </div>
-                      {isEditing ? (
-                        <div className="space-y-1.5">
-                          <textarea
-                            value={editingNotesText}
-                            onChange={(e) => setEditingNotesText(e.target.value)}
-                            className="w-full bg-white dark:bg-[#151e29] border border-slate-300 dark:border-[#243242] rounded-md p-1.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none"
-                            rows={3}
-                            placeholder="Add brief details, court arguments, or notes..."
-                          />
-                          <div className="flex justify-end gap-1.5">
-                            <button
-                              onClick={() => setEditingNotesId(null)}
-                              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded text-[10px] cursor-pointer"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => handleSaveNotes(c.id)}
-                              className="px-2 py-1 bg-[#0f2942] dark:bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-600 text-white dark:text-[#0a0e14] rounded text-[10px] font-bold cursor-pointer"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-start justify-between gap-2 text-slate-600 dark:text-slate-300">
-                          <span className="whitespace-pre-wrap leading-relaxed font-sans italic">
-                            {c.custom_notes || 'No annotations added. Click edit to add notes.'}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setEditingNotesId(c.id);
-                              setEditingNotesText(c.custom_notes || '');
-                            }}
-                            className="text-[#f57c00] hover:underline cursor-pointer font-bold shrink-0"
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-1">
-                      <button
-                        onClick={() => handleInsertReference(c)}
-                        className="flex-1 py-1.5 border border-dashed border-[#f57c00]/40 hover:border-[#f57c00] rounded-lg text-[10.5px] font-bold text-[#f57c00] bg-amber-500/5 hover:bg-amber-500/10 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
-                      >
-                        <Plus size={11} />
-                        <span>Insert Reference</span>
-                      </button>
-                      <button
-                        onClick={() => handleUnpin(c.id)}
-                        className="px-2.5 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-red-500 dark:hover:border-red-500/30 rounded-lg text-[10.5px] font-bold text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 bg-white dark:bg-[#151e29] cursor-pointer transition-all"
-                        title="Unpin citation"
-                      >
-                        <Trash2 size={11} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+        {/* Mobile slide-over drawer sidebar */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-20 md:hidden animate-fade-in"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        <div className={`fixed inset-y-0 left-0 top-16 w-[85%] max-w-[340px] bg-[#fcfaf5] dark:bg-[#0a0e14] border-r border-slate-200 dark:border-[#243242] z-30 flex flex-col overflow-hidden md:hidden transition-transform duration-300 shadow-2xl ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          {renderCitationsList()}
         </div>
 
         {/* COLUMN B: Rich Text Editor Area (Width: 2/3) */}
