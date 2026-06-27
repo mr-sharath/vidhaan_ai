@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Smartphone, Download, X } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: Array<string>;
@@ -84,16 +84,15 @@ export default function PWAInstallBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="bg-[#f57c00] text-white py-2.5 px-4 sm:px-6 text-xs sm:text-sm font-semibold flex items-center justify-between shadow-md relative z-50 animate-fade-in select-none">
-      <div className="flex items-center gap-2 pr-4 min-w-0 flex-wrap">
-        <Smartphone size={16} className="shrink-0 text-white/90" />
+    <div className="bg-[#090d12] border-b border-[#f57c00]/30 text-[#fdfbf7] py-2.5 px-4 sm:px-6 text-[11px] sm:text-xs font-semibold flex items-center justify-between shadow-sm relative z-50 animate-fade-in select-none">
+      <div className="flex items-center min-w-0 pr-4">
         {isIOSDevice ? (
-          <span className="text-[11px] sm:text-xs">
-            Add to Home Screen: Tap Share and then Add to Home Screen for best experience
+          <span>
+            Tap Share and select &ldquo;Add to Home Screen&rdquo; for the best experience.
           </span>
         ) : (
-          <span className="text-[11px] sm:text-xs">
-            Install Vidhaan AI on your device for full-screen experience
+          <span>
+            Install Vidhaan AI on your device for a full-screen experience.
           </span>
         )}
       </div>
@@ -102,7 +101,7 @@ export default function PWAInstallBanner() {
         {!isIOSDevice && deferredPrompt && (
           <button
             onClick={handleInstallClick}
-            className="flex items-center gap-1 bg-white hover:bg-slate-50 text-[#f57c00] px-3 py-1 rounded-lg text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 bg-[#f57c00] hover:bg-[#dd6b20] text-white px-3 py-1 rounded-lg text-[10px] font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
           >
             <Download size={11} className="stroke-[2.5]" />
             <span>Install</span>
@@ -110,10 +109,10 @@ export default function PWAInstallBanner() {
         )}
         <button
           onClick={handleDismiss}
-          className="text-white/80 hover:text-white hover:bg-white/10 p-1 rounded-md transition-colors cursor-pointer"
+          className="text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-md transition-colors cursor-pointer"
           title="Dismiss banner"
         >
-          <X size={14} className="stroke-[2.5]" />
+          <X size={13} className="stroke-[2.5]" />
         </button>
       </div>
     </div>
