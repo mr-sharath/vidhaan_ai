@@ -214,9 +214,9 @@ export default function WorkspaceNotebook() {
 
   const renderCitationsList = () => (
     <>
-      <div className="p-4 border-b border-slate-200 dark:border-[#243242] bg-white dark:bg-[#0d131a] shrink-0">
+      <div className="p-4 border-b border-slate-200 dark:border-[#2c2c2c] bg-white dark:bg-[#121212] shrink-0">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#0f2942] dark:text-amber-500 flex items-center gap-1.5">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#0f2942] dark:text-[#dfc380] flex items-center gap-1.5">
             <BookOpen size={13} className="text-[#f57c00]" />
             <span>Pinned Citations ({citations.length})</span>
           </h2>
@@ -248,18 +248,40 @@ export default function WorkspaceNotebook() {
             return (
               <div
                 key={c.id}
-                className="p-3.5 rounded-xl border border-slate-200 dark:border-[#243242] bg-white dark:bg-[#151e29] hover:shadow-2xs transition-shadow text-left space-y-2.5 relative group"
+                className="p-3.5 rounded-xl border border-slate-200 dark:border-[#2c2c2c] bg-white dark:bg-[#1a1a1a] hover:shadow-2xs transition-shadow text-left space-y-2.5 relative group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#0f2942] dark:text-amber-500 font-mono text-[11px] uppercase tracking-wide truncate max-w-[70%]">
+                  <span className="font-bold text-[#0f2942] dark:text-[#dfc380] font-mono text-[11px] uppercase tracking-wide truncate max-w-[70%]">
                     {c.section_title || 'Statute Section'}
                   </span>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    {c.pdf_name && (
-                      <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded font-mono font-bold truncate max-w-[80px]">
-                        {c.pdf_name}
-                      </span>
-                    )}
+                    {c.pdf_name && (() => {
+                      const file = c.pdf_name;
+                      let linkPath = "";
+                      const filename = file.split('/').pop() || "";
+                      if (file.toLowerCase().includes('constitution')) {
+                        linkPath = `constitution/${filename}`;
+                      } else if (file.toLowerCase().includes('legal_affairs') || file.toLowerCase().includes('mediation') || file.toLowerCase().includes('advocates') || file.toLowerCase().includes('notaries')) {
+                        linkPath = `department_of_legal_affairs/${filename}`;
+                      } else if (file.toLowerCase().includes('justice') || file.toLowerCase().includes('courts') || file.toLowerCase().includes('judges') || file.toLowerCase().includes('contempt')) {
+                        linkPath = `department_of_justice/${filename}`;
+                      } else {
+                        linkPath = `legislative_department/${filename}`;
+                      }
+                      const linkUrl = `/data/${encodeURIComponent(linkPath).replace(/%2F/g, '/')}`;
+
+                      return (
+                        <a 
+                          href={linkUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] bg-slate-100 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-[#dfc380]/10 text-slate-500 hover:text-[#f57c00] dark:text-slate-400 px-2 py-0.5 rounded font-mono font-bold truncate max-w-[80px] hover:underline transition-colors cursor-pointer"
+                          title={`Open ${c.pdf_name}`}
+                        >
+                          {c.pdf_name}
+                        </a>
+                      );
+                    })()}
                     <button
                       onClick={() => handleUnpin(c.id)}
                       className="text-slate-400 hover:text-red-500 cursor-pointer p-0.5"
@@ -275,7 +297,7 @@ export default function WorkspaceNotebook() {
                 </p>
 
                 {/* Annotations / Notes */}
-                <div className="bg-[#fdfbf7] dark:bg-[#0d131a] rounded-lg p-2 border border-slate-100 dark:border-[#243242] text-[11px]">
+                <div className="bg-[#fdfbf7] dark:bg-[#121212] rounded-lg p-2 border border-slate-100 dark:border-[#2c2c2c] text-[11px]">
                   <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
                     My Research Notes:
                   </div>
@@ -284,7 +306,7 @@ export default function WorkspaceNotebook() {
                       <textarea
                         value={editingNotesText}
                         onChange={(e) => setEditingNotesText(e.target.value)}
-                        className="w-full bg-white dark:bg-[#151e29] border border-slate-300 dark:border-[#243242] rounded-md p-1.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none font-sans"
+                        className="w-full bg-white dark:bg-[#1a1a1a] border border-slate-300 dark:border-[#2c2c2c] rounded-md p-1.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none font-sans"
                         rows={3}
                         placeholder="Add brief details, court arguments, or notes..."
                       />
@@ -331,7 +353,7 @@ export default function WorkspaceNotebook() {
                   </button>
                   <button
                     onClick={() => handleUnpin(c.id)}
-                    className="px-2.5 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-red-500 dark:hover:border-red-500/30 rounded-lg text-[10.5px] font-bold text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 bg-white dark:bg-[#151e29] cursor-pointer transition-all"
+                    className="px-2.5 py-1.5 border border-slate-200 dark:border-[#2c2c2c] hover:border-red-500 dark:hover:border-red-500/30 rounded-lg text-[10.5px] font-bold text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 bg-white dark:bg-[#1a1a1a] cursor-pointer transition-all"
                     title="Unpin citation"
                   >
                     <Trash2 size={11} />
@@ -346,25 +368,25 @@ export default function WorkspaceNotebook() {
   );
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans select-none bg-[#fdfbf7] dark:bg-[#0d131a] text-slate-800 dark:text-slate-100 ${darkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen flex flex-col font-sans select-none bg-[#fdfbf7] dark:bg-[#121212] text-slate-800 dark:text-slate-100 ${darkMode ? 'dark' : ''}`}>
       <PWAInstallBanner />
       
       {/* 1. Header ribbon */}
-      <header className="h-16 border-b border-slate-200 dark:border-[#243242] bg-white dark:bg-[#151e29] px-6 flex items-center justify-between shrink-0 select-none">
+      <header className="h-16 border-b border-slate-200 dark:border-[#2c2c2c] bg-white dark:bg-[#1a1a1a] px-6 flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] text-slate-600 dark:text-slate-300 hover:text-[#f57c00] rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-[#2c2c2c] text-slate-600 dark:text-slate-300 hover:text-[#f57c00] rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
             title="Return to Chat Workspace"
           >
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">Return to Chat</span>
             <span className="inline sm:hidden">Chat</span>
           </Link>
-          <span className="text-slate-300 dark:text-[#243242]">|</span>
+          <span className="text-slate-300 dark:text-[#2c2c2c]">|</span>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#243242] rounded-lg text-slate-600 dark:text-slate-400 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#2c2c2c] rounded-lg text-slate-600 dark:text-slate-400 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
             title={sidebarOpen ? "Collapse Pinned Citations Panel" : "Expand Pinned Citations Panel"}
           >
             <BookOpen size={16} className="text-[#f57c00]" />
@@ -372,20 +394,32 @@ export default function WorkspaceNotebook() {
           </button>
         </div>
 
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-500 hover:text-red-650 dark:text-slate-400 dark:hover:text-red-400 rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
-          title="Sign out of Vidhaan AI"
-        >
-          <LogOut size={15} />
-          <span>Logout</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {/* PWA Install Button */}
+          <button
+            onClick={() => (window as any).triggerPWAInstall?.()}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#2c2c2c] hover:border-slate-800 dark:hover:border-slate-400 text-slate-600 dark:text-slate-350 hover:text-slate-900 rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
+            title="Install Vidhaan AI App"
+          >
+            <Download size={14} />
+            <span className="hidden sm:inline">Install App</span>
+          </button>
+
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-500 hover:text-red-650 dark:text-slate-400 dark:hover:text-red-400 rounded-lg transition-colors cursor-pointer text-xs font-bold shrink-0"
+            title="Sign out of Vidhaan AI"
+          >
+            <LogOut size={15} />
+            <span>Logout</span>
+          </button>
+        </div>
       </header>
 
       {/* 2. Three Column Layout */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden h-[calc(100vh-64px)]">
                {/* COLUMN A: Notebook Pinned Citations (Desktop sidebar panel) */}
-        <div className={`hidden md:flex flex-col bg-[#fcfaf5] dark:bg-[#0a0e14] border-r border-slate-200 dark:border-[#243242] overflow-hidden transition-all duration-300 shrink-0 ${
+        <div className={`hidden md:flex flex-col bg-[#fcfaf5] dark:bg-[#0d0d0d] border-r border-slate-200 dark:border-[#2c2c2c] overflow-hidden transition-all duration-300 shrink-0 ${
           sidebarOpen ? 'w-80 lg:w-96' : 'w-0 border-r-0'
         }`}>
           {renderCitationsList()}
@@ -398,41 +432,39 @@ export default function WorkspaceNotebook() {
             onClick={() => setSidebarOpen(false)}
           />
         )}
-        <div className={`fixed inset-y-0 left-0 top-16 w-[85%] max-w-[340px] bg-[#fcfaf5] dark:bg-[#0a0e14] border-r border-slate-200 dark:border-[#243242] z-30 flex flex-col overflow-hidden md:hidden transition-transform duration-300 shadow-2xl ${
+        <div className={`fixed inset-y-0 left-0 top-16 w-[85%] max-w-[340px] bg-[#fcfaf5] dark:bg-[#0d0d0d] border-r border-slate-200 dark:border-[#2c2c2c] z-30 flex flex-col overflow-hidden md:hidden transition-transform duration-300 shadow-2xl ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
           {renderCitationsList()}
         </div>
 
         {/* COLUMN B: Rich Text Editor Area (Width: 2/3) */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#0d131a] relative">
-          <div className="p-4 border-b border-slate-200 dark:border-[#243242] flex items-center justify-start gap-2.5 shrink-0 bg-slate-50 dark:bg-[#151e29]">
+        <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#121212] relative">
+          <div className="p-4 border-b border-slate-200 dark:border-[#2c2c2c] flex items-center justify-start gap-2.5 shrink-0 bg-slate-50 dark:bg-[#1a1a1a]">
             <button
               onClick={handleCopyDraft}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-slate-300 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#2c2c2c] hover:border-slate-350 dark:hover:border-slate-400 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1a1a] cursor-pointer hover:shadow-xs transition-all"
             >
-              {copySuccess ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+              {copySuccess ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} />}
               <span>{copySuccess ? 'Copied!' : 'Copy to Clipboard'}</span>
             </button>
-
             <button
               onClick={handleDownload}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#243242] hover:border-[#f57c00] rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-[#f57c00] bg-white dark:bg-[#151e29] cursor-pointer hover:shadow-xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-[#2c2c2c] hover:border-[#f57c00] dark:hover:border-[#dfc380] rounded-lg text-[11px] font-bold text-slate-655 dark:text-slate-300 hover:text-[#f57c00] dark:hover:text-[#dfc380] bg-white dark:bg-[#1a1a1a] cursor-pointer hover:shadow-xs transition-all"
             >
               <Download size={11} />
               <span>Export Brief</span>
             </button>
-
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0f2942] dark:bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-600 rounded-lg text-[11px] font-bold text-white dark:text-[#0a0e14] cursor-pointer shadow-xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0f2942] dark:bg-[#dfc380] hover:bg-[#1a365d] dark:hover:bg-[#d0b370] rounded-lg text-[11px] font-bold text-white dark:text-slate-900 cursor-pointer shadow-xs transition-all"
             >
               <Printer size={11} />
               <span>Print Brief</span>
             </button>
           </div>
 
-          <div className="flex-1 p-6 overflow-hidden flex flex-col">
+          <div className="flex-1 p-6 overflow-hidden flex flex-col bg-white dark:bg-[#121212]">
             <span className="text-[10px] font-bold font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-2">
               Notebook Editor Whiteboard
             </span>
@@ -440,7 +472,7 @@ export default function WorkspaceNotebook() {
               ref={textareaRef}
               value={draftContent}
               onChange={(e) => handleDraftChange(e.target.value)}
-              className="flex-1 w-full h-full bg-[#faf8f5] dark:bg-[#111720] border border-slate-200 dark:border-[#243242] rounded-2xl p-6 text-sm text-slate-800 dark:text-slate-200 font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#f57c00]/50 shadow-inner overflow-y-auto resize-none"
+              className="flex-1 w-full h-full bg-[#faf8f5] dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2c2c2c] rounded-2xl p-6 text-sm text-slate-800 dark:text-slate-200 font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#f57c00]/50 dark:focus:ring-[#dfc380]/50 shadow-inner overflow-y-auto resize-none"
               placeholder="Case Brief Outline..."
             />
           </div>

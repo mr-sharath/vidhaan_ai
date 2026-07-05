@@ -10,8 +10,8 @@
   --color-navy-800: #1a365d;
   --color-navy-950: #0f172a;
   
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', 'Playfair Display', serif;
+  --font-sans: var(--font-sans-google), 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display-google), 'Playfair Display', 'Georgia', serif;
 }
 
 :root {
@@ -25,13 +25,13 @@
 }
 
 .dark {
-  --background: #0d131a; /* Rich dark slate */
-  --foreground: #f1f5f9; /* Off-white for readability */
-  --card: #151e29;      /* Dark card canvas */
-  --border: #243242;    /* Dark border slate */
-  --sidebar: #0a0e14;   /* Very dark sidebar background */
-  --primary: #f57c00;   /* Saffron primary in dark mode for contrast */
-  --accent: #38bdf8;    /* Sky blue accent */
+  --background: #121212; /* Premium warm charcoal / obsidian black */
+  --foreground: #ececec; /* Soft ivory white for readability */
+  --card: #1a1a1a;      /* Clean neutral card background */
+  --border: #2c2c2c;    /* Neutral dark border gray */
+  --sidebar: #0d0d0d;   /* Muted deep sidebar background */
+  --primary: #dfc380;   /* Antique Gold accent primary for soft contrast */
+  --accent: #d4af37;    /* Warm Bronze accent */
 }
 
 body {

@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from sqlalchemy import create_engine, Column, String, Text, ForeignKey, DateTime, Boolean
+from sqlalchemy import create_engine, Column, String, Text, ForeignKey, DateTime, Boolean, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TSVECTOR
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from pgvector.sqlalchemy import Vector
@@ -38,10 +38,12 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False, index=True)
     password_hash = Column(String, nullable=True)
+    is_admin = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     threads = relationship("ChatThread", back_populates="user", cascade="all, delete-orphan")
     citations = relationship("NotebookCitation", back_populates="user", cascade="all, delete-orphan")
+    custom_kbs = relationship("CustomKnowledgeBase", back_populates="user", cascade="all, delete-orphan")
 
 class ChatThread(Base):
     __tablename__ = 'chat_threads'
@@ -83,12 +85,58 @@ class NotebookCitation(Base):
     
     user = relationship("User", back_populates="citations")
 
+class CustomKnowledgeBase(Base):
+    __tablename__ = 'custom_knowledge_bases'
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(String, default="processing", nullable=False)  # 'processing', 'ready', 'failed'
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    user = relationship("User", back_populates="custom_kbs")
+    documents = relationship("CustomDocument", back_populates="kb", cascade="all, delete-orphan")
+
+class CustomDocument(Base):
+    __tablename__ = 'custom_documents'
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    kb_id = Column(UUID(as_uuid=True), ForeignKey('custom_knowledge_bases.id', ondelete='CASCADE'), nullable=False)
+    filename = Column(String, nullable=False)
+    file_size = Column(Integer, nullable=False)
+    file_path = Column(String, nullable=False)
+    status = Column(String, default="uploaded", nullable=False)  # 'uploaded', 'processing', 'completed', 'failed'
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    kb = relationship("CustomKnowledgeBase", back_populates="documents")
+    chunks = relationship("CustomDocumentChunk", back_populates="document", cascade="all, delete-orphan")
+
+class CustomDocumentChunk(Base):
+    __tablename__ = 'custom_document_chunks'
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    document_id = Column(UUID(as_uuid=True), ForeignKey('custom_documents.id', ondelete='CASCADE'), nullable=False)
+    content = Column(Text, nullable=False)
+    embedding = Column(Vector(768), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    document = relationship("CustomDocument", back_populates="chunks")
+
 # Create Database Engine
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
+    from sqlalchemy import text
     Base.metadata.create_all(bind=engine)
+    with engine.begin() as conn:
+        try:
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;"))
+            print("Database check: 'is_admin' column verified/added successfully.")
+        except Exception as e:
+            print(f"Warning: Could not alter users table to verify/add 'is_admin': {e}")
 
 def get_db():
     db = SessionLocal()

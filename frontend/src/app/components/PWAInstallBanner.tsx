@@ -32,26 +32,25 @@ export default function PWAInstallBanner() {
     // 2. iOS detection
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window);
     if (isIOS) {
-      setTimeout(() => {
-        setIsIOSDevice(true);
-        setIsVisible(true);
-      }, 0);
-      return;
+      setIsIOSDevice(true);
     }
 
     // 3. Android/Chrome prompt listener
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setTimeout(() => {
-        setDeferredPrompt(e as BeforeInstallPromptEvent);
-        setIsVisible(true);
-      }, 0);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+    // 4. Register global triggers
+    (window as any).triggerPWAInstall = () => {
+      setIsVisible(true);
+    };
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      delete (window as any).triggerPWAInstall;
     };
   }, []);
 
@@ -100,14 +99,18 @@ export default function PWAInstallBanner() {
           <span>
             Tap the browser Share button and select &ldquo;Add to Home Screen&rdquo; for the best experience.
           </span>
-        ) : (
+        ) : deferredPrompt ? (
           <span>
             Add this application to your device to enable a full-screen, institutional-grade legal workbench experience.
+          </span>
+        ) : (
+          <span>
+            Open your browser options menu (e.g. the three dots icon in Chrome/Edge, or Share in Safari) and select &ldquo;Install app&rdquo; or &ldquo;Add to Home Screen&rdquo;.
           </span>
         )}
       </div>
 
-      {/* Install Action Button (For Android/Chrome only) */}
+      {/* Install Action Button (For Android/Chrome only when prompt is ready) */}
       {!isIOSDevice && deferredPrompt && (
         <button
           onClick={handleInstallClick}
